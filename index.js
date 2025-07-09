@@ -4,21 +4,29 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import fileUpload from "express-fileupload";
 
-import connectDB from "./Database/dbConfig.js";
+// ✅ Update the path based on your folder casing: 'database' or 'Database'
+import connectDB from "./database/dbConfig.js";
+
 import authRoute from "./router/userRouter.js";
 import messageRouter from "./router/messageRouter.js";
 import appointmentRouter from "./router/appointmentRouter.js";
 import { errorMiddleware } from "./middlewares/error.js";
 
+// ✅ Load environment variables
 dotenv.config();
 
+// ✅ Initialize express app
 const app = express();
 
-// Middlewares
+// ✅ Connect to MongoDB
+connectDB();
+
+// ✅ Core Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// ✅ CORS Configuration
 app.use(
   cors({
     origin: [process.env.FRONTEND_URL_ONE, process.env.FRONTEND_URL_TWO],
@@ -27,7 +35,7 @@ app.use(
   })
 );
 
-// File Upload Middleware
+// ✅ File Upload Middleware
 app.use(
   fileUpload({
     useTempFiles: true,
@@ -35,24 +43,21 @@ app.use(
   })
 );
 
-// Connect Database
-connectDB();
-
-// Base Route
+// ✅ Base Test Route
 app.get("/", (req, res) => {
-  res.status(200).send("Welcome to Hospital Management database backend");
+  res.status(200).send("✅ VitalPulse Hospital Management Backend is running.");
 });
 
-// Routers
+// ✅ API Routes
 app.use("/api/auth", authRoute);
 app.use("/api/v1/message", messageRouter);
 app.use("/api/v1/appointment", appointmentRouter);
 
-// Error Handler
+// ✅ Global Error Middleware
 app.use(errorMiddleware);
 
-// Start Server
-const port = process.env.PORT || 4000;
-app.listen(port, () => {
-  console.log(`✅ Server Started on port ${port}`);
+// ✅ Start Server
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server started on http://localhost:${PORT}`);
 });
